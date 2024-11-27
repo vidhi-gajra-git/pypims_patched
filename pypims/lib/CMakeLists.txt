@@ -1,33 +1,33 @@
 cmake_minimum_required(VERSION 3.11)
 
-# nvcc flags                                                                                                             
+# Set C++ standard to C++14
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_20)
-#set (CUDA_NVCC_FLAGS "-arch=sm_20" CACHE STRING "nvcc flags" FORCE)
-
+# Include necessary directories
 file(GLOB_RECURSE gc_srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc")
 file(GLOB_RECURSE gc_headers "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 set (GC_INCLUDE_DIRS "")
 foreach (_header_file ${gc_headers})
-	get_filename_component(_dir ${_header_file} DIRECTORY)
-	list (APPEND GC_INCLUDE_DIRS ${_dir})
+    get_filename_component(_dir ${_header_file} DIRECTORY)
+    list(APPEND GC_INCLUDE_DIRS ${_dir})
 endforeach()
 list(REMOVE_DUPLICATES GC_INCLUDE_DIRS)
 
+# CUDA source files
 file(GLOB_RECURSE gc_cuda_srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cu")
 
-#set(GC_INCLUDE_DIRS${GC_INCLUDE_DIRS} PARENT_SCOPE)
+# Set CUDA architecture
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch=sm_60")
 
-if(TARGET lib)
-
-message("lib is already defined")
-
-else()
-
+# Include the necessary directories
 include_directories(${GC_INCLUDE_DIRS})
-add_library(lib STATIC ${gc_srcs})
-#cuda_add_library(cuda_lib STATIC ${gc_cuda_srcs})
-cuda_add_library(cuda_lib  STATIC ${gc_cuda_srcs})
 
-endif()
+# Add the libraries
+add_library(lib STATIC ${gc_srcs})
+add_library(cuda_lib STATIC ${gc_cuda_srcs})
+target_include_directories(cuda_lib PRIVATE ${GC_INCLUDE_DIRS})
+
+# Link with CUDA
+find_package(CUDA REQUIRED)
