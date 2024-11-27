@@ -9,7 +9,7 @@ ENDIF(WIN32)
 IF(UNIX)
     set(PLATFORM_CXX_FLAGS "-pthread -std=c++11 -fPIC -O3")
     #set(CUDA_SEPARABLE_COMPILATION ON)
-    set(CUDA_NVCC_FLAGS  -arch=sm_60;--expt-extended-lambda)
+    set(CUDA_NVCC_FLAGS -arch=sm_60;-arch=sm_70;-arch=sm_80;--expt-extended-lambda)
 ENDIF(UNIX)
 
 list(APPEND CMAKE_CXX_FLAGS ${PLATFORM_CXX_FLAGS})
